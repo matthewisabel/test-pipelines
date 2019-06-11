@@ -1,0 +1,29 @@
+# Only run against master
+trigger:
+- master
+
+# Don't run against PRs
+pr: none
+
+stages:
+- stage: build
+  jobs:
+  - job: run_build
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+    - script: echo Build
+
+
+- stage: prod
+  displayName: 'Prod'
+  dependsOn: build
+  jobs:
+  - deployment: deployProd
+    displayName: 'Deploy prod'
+    environment: prodEnv
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo Deploy
